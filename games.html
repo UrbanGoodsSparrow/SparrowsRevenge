@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Games - Sparrow's Revenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #000000;
+      color: #01107d;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 200px;
+      height: 100%;
+      background: #111;
+      padding-top: 20px;
+    }
+
+    .sidebar .logo {
+      color: white;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar .logo span { color: red; }
+
+    .sidebar button {
+      display: block;
+      width: 80%;
+      margin: 15px auto;
+      padding: 10px;
+      background: #000000;
+      color: #bf9000;
+      border: 2px solid #bf9000;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 600;
+    }
+
+    .sidebar button:hover {
+      box-shadow: 0 0 15px red;
+      transform: scale(1.05);
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+      color: #01107d;
+    }
+
+    p {
+      color: #bf9000;
+      font-size: 18px;
+    }
+
+    /* Game selection buttons */
+    .game-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .game-button {
+      width: 200px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .game-button img {
+      width: 100%;
+      border: 2px solid #bf9000;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .game-button img:hover {
+      box-shadow: 0 0 20px red;
+      transform: scale(1.05);
+    }
+
+    .game-button p {
+      color: #bf9000;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    /* Game iframe */
+    #gameEmbed {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 900px;
+      height: 500px;
+      border: 3px solid #bf9000;
+      position: relative;
+      background: #000000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    #gameEmbed iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+
+    .play-button {
+      padding: 20px 40px;
+      background: #01107d;
+      color: #bf9000;
+      border: 2px solid #bf9000;
+      border-radius: 12px;
+      font: bold 24px 'Orbitron', sans-serif;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1001;
+      transition: 0.3s;
+    }
+
+    .play-button:hover {
+      background: #000000;
+      box-shadow: 0 0 20px red, 0 0 40px red, 0 0 60px red;
+    }
+
+    .fullscreen-button {
+      padding: 10px 15px;
+      background: #01107d;
+      color: #bf9000;
+      border: 2px solid #bf9000;
+      border-radius: 8px;
+      font: bold 14px 'Orbitron', sans-serif;
+      cursor: pointer;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1002;
+      transition: 0.3s;
+    }
+
+    .fullscreen-button:hover {
+      background: #000000;
+      box-shadow: 0 0 15px red;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">Sparrow's <span>REVENGE</span></div>
+  <button onclick="openPage('index.html')">Home</button>
+  <button onclick="openPage('school.html')">School Apps</button>
+  <button onclick="openPage('bell.html')">Bell Schedule</button>
+  <button onclick="openPage('games.html')">Games</button>
+  <button onclick="openPage('profile.html')">Profile</button>
+</div>
+
+<div class="main">
+  <h1>Games</h1>
+  <p>Select a game below and click the "CLICK TO PLAY" button to start.</p>
+
+  <!-- Game selection -->
+  <div class="game-list">
+    <div class="game-button" onclick="loadGame('https://html5.gamemonetize.co/uopcg02bg08j9jl0fwm58g0y1tzl9icc/')">
+      <img src="https://i.imgur.com/XPcV6pl.png" alt="Geometry Dash">
+      <p>Geometry Dash</p>
+    </div>
+    <div class="game-button" onclick="loadGame('https://footballbros.io/')">
+      <img src="https://i.imgur.com/Qz6L2Ot.png" alt="Football Bros">
+      <p>Football Bros</p>
+    </div>
+  </div>
+
+  <!-- Game iframe -->
+  <div id="gameEmbed">
+    <button class="play-button" onclick="showGame()">CLICK TO PLAY</button>
+    <iframe id="gameFrame" allowfullscreen></iframe>
+    <button class="fullscreen-button" onclick="openInNewTab()">FULLSCREEN</button>
+  </div>
+</div>
+
+<script>
+  let selectedGameURL = '';
+
+  function openPage(page) {
+    window.location.href = page;
+  }
+
+  function loadGame(url) {
+    selectedGameURL = url;
+    const playButton = document.querySelector('.play-button');
+    playButton.style.display = 'block'; // show play button
+    const iframe = document.getElementById('gameFrame');
+    iframe.style.display = 'none'; // hide iframe until clicked
+  }
+
+  function showGame() {
+    if (!selectedGameURL) {
+      alert('Please select a game first!');
+      return;
+    }
+    const iframe = document.getElementById("gameFrame");
+    iframe.src = selectedGameURL;
+    iframe.style.display = "block";
+    document.querySelector('.play-button').style.display = "none";
+  }
+
+  function openInNewTab() {
+    if (!selectedGameURL) {
+      alert('Please select a game first!');
+      return;
+    }
+    const newWin = window.open('about:blank', '_blank');
+    if (newWin) {
+      newWin.document.open();
+      newWin.document.write(`<iframe src="${selectedGameURL}" width="100%" height="100%" frameborder="0" allowfullscreen style="margin:0; padding:0; border:none;"></iframe>`);
+      newWin.document.close();
+    } else {
+      alert('Popup blocked. Allow popups for fullscreen.');
+    }
+  }
+</script>
+
+</body>
+</html>

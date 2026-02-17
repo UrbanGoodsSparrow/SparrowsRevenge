@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sparrow's Revenge - Admin Panel</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #0a0a0a;
+  color: #fff;
+}
+h1,h2 { text-align:center; color:#ff0000; margin:10px 0; }
+
+.container { max-width:900px; margin:auto; padding:20px; }
+
+input,textarea { padding:10px; margin:5px 0; width:100%; border:2px solid #ff0000; border-radius:12px; background:#111; color:#fff; font-size:16px; }
+
+button { padding:12px; margin:5px 0; width:100%; border:2px solid #ff0000; border-radius:12px; background:#111; color:#fff; font-weight:bold; cursor:pointer; font-size:16px; transition:0.2s; }
+button:hover { transform:translateY(-3px); box-shadow:0 0 15px #ff0000; background:#1a0000; }
+
+.section { margin:20px 0; border:2px solid #ff0000; border-radius:15px; padding:15px; }
+
+.school-apps-list img { width:100px; height:100px; object-fit:cover; border:2px solid #ff0000; border-radius:12px; margin-right:10px; vertical-align:middle; transition:0.2s; }
+.school-apps-list img:hover { box-shadow:0 0 15px #ff0000; }
+.school-apps-list div { display:flex; align-items:center; margin:5px 0; }
+
+.tab-buttons { display:flex; margin-bottom:10px; }
+.tab-buttons button { flex:1; margin-right:5px; }
+.tab-buttons button:last-child { margin-right:0; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+.troll-btn { padding:10px; margin:5px; border-radius:12px; border:2px solid #ff0000; background:#111; color:#fff; cursor:pointer; font-weight:bold; transition:0.2s; }
+.troll-btn:hover { transform:translateY(-3px); box-shadow:0 0 15px #ff0000; background:#1a0000; }
+
+#toast { visibility:hidden; min-width:200px; background:#111; color:#ff0000; text-align:center; border:2px solid #ff0000; border-radius:12px; padding:10px; position:fixed; top:20px; right:20px; z-index:1000; font-weight:bold; box-shadow:0 0 15px #ff0000; transition:visibility 0s, opacity 0.5s linear; opacity:0; }
+#toast.show { visibility:visible; opacity:1; }
+</style>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div id="login-section" class="section">
+    <h2>Admin Login</h2>
+    <input type="password" id="admin-password" placeholder="Enter password">
+    <button onclick="checkPassword()">Login</button>
+    <p id="error-msg" style="color:#ff0000; display:none;">Wrong password!</p>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-section" style="display:none;">
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="openTab('main-tab')">Main</button>
+      <button class="tab-btn" onclick="openTab('troll-tab')">Troll</button>
+    </div>
+
+    <!-- Main Tab -->
+    <div id="main-tab" class="tab-content active">
+      <div class="section">
+        <h2>School Apps</h2>
+        <input type="text" id="app-name" placeholder="App Name">
+        <input type="text" id="app-img" placeholder="Image URL or <img> tag">
+        <input type="text" id="app-link" placeholder="Link URL">
+        <button onclick="addSchoolApp()">Add App</button>
+        <h3>Existing Apps:</h3>
+        <div id="school-apps" class="school-apps-list"></div>
+      </div>
+
+      <div class="section">
+        <h2>Bell Schedule</h2>
+        <textarea id="bell-schedule" rows="6"></textarea>
+        <button onclick="saveBellSchedule()">Save Schedule</button>
+      </div>
+
+      <div class="section">
+        <h2>Users</h2>
+        <div id="user-list"></div>
+      </div>
+    </div>
+
+    <!-- Troll Tab -->
+    <div id="troll-tab" class="tab-content">
+      <div class="section">
+        <h2>Trolling Sounds</h2>
+        <div id="troll-buttons"></div>
+        <h3>Create Custom Command</h3>
+        <input type="text" id="cmd-name" placeholder="Button Name">
+        <input type="text" id="cmd-msg" placeholder="Message to show in fake alert">
+        <input type="text" id="cmd-sound" placeholder="Sound ID (optional)">
+        <button onclick="addCustomCommand()">Add Command</button>
+      </div>
+    </div>
+
+    <button onclick="logoutAdmin()">Logout</button>
+    <button onclick="window.location.href='index.html'">Back to Dashboard</button>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- Add your sound files -->
+<audio id="fah" src="sounds/fah.mp3"></audio>
+<audio id="erm" src="sounds/erm.mp3"></audio>
+<audio id="boo" src="sounds/boo.mp3"></audio>
+<audio id="yeet" src="sounds/yeet.mp3"></audio>
+
+<script>
+const ADMIN_PASSWORD="5021";
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.className="show";
+  setTimeout(()=>t.className=t.className.replace("show",""),2500);
+}
+
+// ----- LOGIN -----
+function checkPassword(){
+  const input=document.getElementById("admin-password").value;
+  if(input===ADMIN_PASSWORD){
+    document.getElementById("login-section").style.display="none";
+    document.getElementById("admin-section").style.display="block";
+    localStorage.setItem("adminLoggedIn","true");
+    loadData();
+    showToast("Admin logged in!");
+  }else{
+    document.getElementById("error-msg").style.display="block";
+    showToast("Incorrect password!");
+  }
+}
+
+function logoutAdmin(){
+  localStorage.removeItem("adminLoggedIn");
+  location.reload();
+}
+
+// ----- TABS -----
+function openTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[onclick="openTab('${tabId}')"]`).classList.add('active');
+}
+
+// ----- SCHOOL APPS -----
+function addSchoolApp(){
+  const name=document.getElementById("app-name").value;
+  const img=document.getElementById("app-img").value;
+  const link=document.getElementById("app-link").value;
+  if(!name||!img||!link) return showToast("Fill all fields!");
+  let apps=JSON.parse(localStorage.getItem("schoolApps")||"[]");
+  apps.push({name,img,link});
+  localStorage.setItem("schoolApps",JSON.stringify(apps));
+  document.getElementById("app-name").value="";
+  document.getElementById("app-img").value="";
+  document.getElementById("app-link").value="";
+  loadSchoolApps();
+  showToast("App added!");
+}
+function loadSchoolApps(){
+  const apps=JSON.parse(localStorage.getItem("schoolApps")||"[]");
+  const container=document.getElementById("school-apps");
+  container.innerHTML="";
+  apps.forEach((app,idx)=>{
+    const div=document.createElement("div");
+    const imageHTML=app.img.trim().startsWith("<img")?app.img:`<img src="${app.img}" alt="${app.name}">`;
+    div.innerHTML=`${imageHTML} <span>${app.name} - <a href="${app.link}" target="_blank">Go</a></span> <button onclick="removeApp(${idx})">Remove</button>`;
+    container.appendChild(div);
+  });
+}
+function removeApp(idx){
+  let apps=JSON.parse(localStorage.getItem("schoolApps")||"[]");
+  apps.splice(idx,1);
+  localStorage.setItem("schoolApps",JSON.stringify(apps));
+  loadSchoolApps();
+  showToast("App removed!");
+}
+
+// ----- BELL SCHEDULE -----
+function saveBellSchedule(){
+  const schedule=document.getElementById("bell-schedule").value;
+  localStorage.setItem("bellSchedule",schedule);
+  showToast("Bell schedule saved!");
+}
+function loadBellSchedule(){
+  const schedule=localStorage.getItem("bellSchedule")||"";
+  document.getElementById("bell-schedule").value=schedule;
+}
+
+// ----- USERS -----
+function loadUsers(){
+  const users=JSON.parse(localStorage.getItem("users")||"[]");
+  const container=document.getElementById("user-list");
+  container.innerHTML="";
+  users.forEach(u=>{
+    const div=document.createElement("div");
+    div.textContent=u.username+" ("+u.email+")";
+    container.appendChild(div);
+  });
+}
+
+// ----- TROLL COMMANDS -----
+function playSound(id){
+  const audio=document.getElementById(id);
+  if(audio){ audio.currentTime=0; audio.play(); }
+}
+
+// Custom command creation
+function addCustomCommand(){
+  const name=document.getElementById("cmd-name").value.trim();
+  const msg=document.getElementById("cmd-msg").value.trim();
+  const sound=document.getElementById("cmd-sound").value.trim();
+  if(!name||!msg) return showToast("Fill command name and message!");
+  
+  const btn=document.createElement("button");
+  btn.className="troll-btn";
+  btn.textContent=name;
+  btn.onclick=function(){
+    alert(msg); // fake alert
+    if(sound) playSound(sound);
+  };
+  document.getElementById("troll-buttons").appendChild(btn);
+  
+  document.getElementById("cmd-name").value="";
+  document.getElementById("cmd-msg").value="";
+  document.getElementById("cmd-sound").value="";
+  
+  showToast("Command added!");
+}
+
+// ----- AUTO LOGIN -----
+window.onload=function(){
+  if(localStorage.getItem("adminLoggedIn")==="true"){
+    document.getElementById("login-section").style.display="none";
+    document.getElementById("admin-section").style.display="block";
+    loadData();
+  }
+};
+</script>
+</body>
+</html>

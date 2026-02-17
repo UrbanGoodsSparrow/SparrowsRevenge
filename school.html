@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sparrow's Revenge - School Apps</title>
+<style>
+  body {
+    background-color: #000000;
+    color: #01107d;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: #bf9000;
+    margin: 20px 0;
+  }
+
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1000px;
+    margin: auto;
+  }
+
+  .app-card {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .app-card img {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #ff0000;
+    border-radius: 12px;
+    object-fit: cover;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .app-card img:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px #ff0000;
+  }
+
+  .app-card p {
+    color: #ff0000;
+    font-weight: bold;
+    margin: 8px 0 0 0;
+  }
+
+  .back-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: 2px solid #ff0000;
+    border-radius: 8px;
+    background-color: #000000;
+    color: #ff0000;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    width: 120px;
+  }
+
+  .back-btn:hover {
+    background-color: #ff0000;
+    color: #000000;
+  }
+</style>
+</head>
+<body>
+
+<h1>School Apps</h1>
+
+<div class="apps-grid" id="apps-grid">
+  <!-- Dynamic app cards will be inserted here -->
+</div>
+
+<button class="back-btn" onclick="window.location.href='index.html'">Back</button>
+
+<script>
+  // Example apps array - supports <img> tag or image URL
+  const apps = [
+    {
+      name: "Delta Math",
+      link: "https://www.deltamath.com/",
+      image: "https://uploads.onecompiler.io/44dnht8qv/44dnjccaf/Delta.png"
+    },
+    {
+      name: "ALEKS",
+      link: "https://www.aleks.com/",
+      image: "https://uploads.onecompiler.io/44dnht8qv/44dnjccaf/images.png"
+    },
+    {
+      name: "ClassLink",
+      link: "https://launchpad.classlink.com/",
+      image: "https://uploads.onecompiler.io/44dnht8qv/44dnjccaf/download%20(2).png"
+    },
+    {
+      name: "Google Classroom",
+      link: "https://classroom.google.com/",
+      image: "https://uploads.onecompiler.io/44dnht8qv/44dnjccaf/images%20(1).png"
+    },
+    {
+      
+    }
+  ];
+
+  const grid = document.getElementById('apps-grid');
+
+  apps.forEach(app => {
+    const card = document.createElement('div');
+    card.className = 'app-card';
+    card.onclick = () => window.open(app.link, '_blank');
+
+    if (app.image.trim().startsWith('<img')) {
+      card.innerHTML = app.image + `<p>${app.name}</p>`;
+      const imgTag = card.querySelector('img');
+      imgTag.style.border = '2px solid #ff0000';
+      imgTag.style.borderRadius = '12px';
+      imgTag.style.width = '120px';
+      imgTag.style.height = '120px';
+      imgTag.style.objectFit = 'cover';
+      imgTag.style.transition = 'transform 0.2s, box-shadow 0.2s';
+      imgTag.onmouseover = () => { imgTag.style.transform = 'translateY(-5px)'; imgTag.style.boxShadow = '0 0 15px #ff0000'; };
+      imgTag.onmouseout = () => { imgTag.style.transform = 'translateY(0)'; imgTag.style.boxShadow = 'none'; };
+    } else {
+      const img = document.createElement('img');
+      img.src = app.image;
+      img.alt = app.name;
+      card.appendChild(img);
+
+      const p = document.createElement('p');
+      p.innerText = app.name;
+      card.appendChild(p);
+    }
+
+    grid.appendChild(card);
+  });
+</script>
+
+</body>
+</html>

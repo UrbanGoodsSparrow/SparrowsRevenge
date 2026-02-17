@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sparrow's Revenge</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">Sparrow's <span>REVENGE</span></div>
+  <button onclick="openPage('index.html')">Home</button>
+  <button onclick="openPage('school.html')">School Apps</button>
+  <button onclick="openPage('bell.html')">Bell Schedule</button>
+  <button onclick="openPage('games.html')">Games</button>
+  <button onclick="openPage('profile.html')">Profile</button>
+</div>
+
+<div class="main">
+  <h1>Welcome to Sparrow's Revenge</h1>
+  <p>Best School Gamesite.</p>
+</div>
+<script>
+  const ADMIN_PASSWORD = "5021";
+
+  document.addEventListener("keydown", function(e) {
+    // Check if Ctrl + B is pressed
+    if (e.ctrlKey && e.key.toLowerCase() === "b") {
+      e.preventDefault(); // Prevent browser default behavior (bookmark)
+      const pw = prompt("Enter admin password:");
+      if (pw === ADMIN_PASSWORD) {
+        window.location.href = "admin.html"; // redirect to admin panel
+      } else if (pw !== null) {
+        alert("Wrong password!");
+      }
+    }
+  });
+</script>
+</body>
+</html>

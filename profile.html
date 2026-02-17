@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile - Sparrow's Revenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="main.js"></script>
+  <style>
+    body {
+      background: #000000;
+      color: #bf9000;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 200px;
+      height: 100%;
+      background: #111;
+      padding-top: 20px;
+    }
+
+    .sidebar .logo {
+      color: white;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar .logo span {
+      color: red;
+    }
+
+    .sidebar button {
+      display: block;
+      width: 80%;
+      margin: 15px auto;
+      padding: 10px;
+      background: black;
+      color: white;
+      border: 2px solid red;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .sidebar button:hover {
+      box-shadow: 0 0 15px red;
+      transform: scale(1.05);
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px; /* space for sidebar */
+      padding: 20px;
+    }
+
+    .profile-box {
+      background: #111;
+      padding: 20px;
+      border: 2px solid red;
+      box-shadow: 0 0 15px red;
+      max-width: 400px;
+      margin-top: 20px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px 0;
+      width: 90%;
+      background: black;
+      border: 2px solid red;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: black;
+      color: white;
+      border: 2px solid red;
+      cursor: pointer;
+      transition: 0.3s;
+      font-family: 'Orbitron', sans-serif;
+      margin-top: 10px;
+      width: 95%;
+    }
+
+    button:hover {
+      box-shadow: 0 0 15px red;
+      transform: scale(1.05);
+    }
+
+    .message {
+      color: white;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">Sparrow's <span>REVENGE</span></div>
+  <button onclick="openPage('index.html')">Home</button>
+  <button onclick="openPage('school.html')">School Apps</button>
+  <button onclick="openPage('bell.html')">Bell Schedule</button>
+  <button onclick="openPage('games.html')">Games</button>
+  <button onclick="openPage('profile.html')">Profile</button>
+</div>
+
+<div class="main">
+
+  <!-- Login / Signup Box -->
+  <div class="profile-box" id="login-box">
+    <h1>Login / Signup</h1>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+    <p class="message" id="login-message"></p>
+  </div>
+
+  <!-- Logged In Profile -->
+  <div class="profile-box" id="profile-box" style="display:none;">
+    <h1>Welcome, <span id="user-display"></span></h1>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<script>
+  // Sidebar navigation function
+  function openPage(page) {
+    window.location.href = page;
+  }
+
+  // Load saved user if already logged in
+  window.onload = function() {
+    const currentUser = localStorage.getItem("currentUser");
+    if(currentUser) {
+      showProfile(currentUser);
+    }
+  }
+
+  // Signup function
+  function signup() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const message = document.getElementById("login-message");
+
+    if(!username || !password) {
+      message.innerText = "Enter both username and password!";
+      return;
+    }
+
+    let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
+
+    if(accounts[username]) {
+      message.innerText = "Username already exists!";
+      return;
+    }
+
+    accounts[username] = password;
+    localStorage.setItem("accounts", JSON.stringify(accounts));
+    localStorage.setItem("currentUser", username);
+
+    showProfile(username);
+  }
+
+  // Login function
+  function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const message = document.getElementById("login-message");
+
+    if(!username || !password) {
+      message.innerText = "Enter both username and password!";
+      return;
+    }
+
+    let accounts = JSON.parse(localStorage.getItem("accounts") || "{}");
+
+    if(accounts[username] && accounts[username] === password) {
+      localStorage.setItem("currentUser", username);
+      showProfile(username);
+    } else {
+      message.innerText = "Incorrect username or password!";
+    }
+  }
+
+  // Show profile after login/signup
+  function showProfile(username) {
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("profile-box").style.display = "block";
+    document.getElementById("user-display").innerText = username;
+  }
+
+  // Logout
+  function logout() {
+    localStorage.removeItem("currentUser");
+    document.getElementById("profile-box").style.display = "none";
+    document.getElementById("login-box").style.display = "block";
+    document.getElementById("login-message").innerText = "Logged out!";
+  }
+</script>
+
+</body>
+</html>
